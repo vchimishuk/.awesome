@@ -71,7 +71,7 @@ end
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ " web ", " emacs ", " term ", " misc ", " im ", " music " }, s)
+    tags[s] = awful.tag({ " web ", " emacs ", " term ", " misc " }, s)
 
     -- Set default layout for tags.
     for tagnumber = 1, 6 do
@@ -113,35 +113,9 @@ mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 4, awful.tag.viewnext),
                     awful.button({ }, 5, awful.tag.viewprev)
                     )
-mytasklist = {}
-mytasklist.buttons = awful.util.table.join(
-                     awful.button({ }, 1, function (c)
-                                              if not c:isvisible() then
-                                                  awful.tag.viewonly(c:tags()[1])
-                                              end
-                                              client.focus = c
-                                              c:raise()
-                                          end),
-                     awful.button({ }, 3, function ()
-                                              if instance then
-                                                  instance:hide()
-                                                  instance = nil
-                                              else
-                                                  instance = awful.menu.clients({ width=250 })
-                                              end
-                                          end),
-                     awful.button({ }, 4, function ()
-                                              awful.client.focus.byidx(1)
-                                              if client.focus then client.focus:raise() end
-                                          end),
-                     awful.button({ }, 5, function ()
-                                              awful.client.focus.byidx(-1)
-                                              if client.focus then client.focus:raise() end
-                                          end))
 
 -- Create bottom wibox's widgets.
-clockmonitor = awful.widget.textclock("[%d.%m.%Y %H:%M]")
-mailmonitor = wibox.widget.textbox()
+clockmonitor = awful.widget.textclock("[%d.%m.%Y %H:%M] ")
 batterymonitor = wibox.widget.textbox()
 cpumonitor = wibox.widget.textbox()
 
@@ -157,40 +131,24 @@ for s = 1, screen.count() do
     -- Create a taglist widget
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
-    -- Create a tasklist widget
-    mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
-
     -- Create the top wibox
-    mywibox[s] = awful.wibox({ position = "top", screen = s })
+    mywibox[s] = awful.wibox({ position = "bottom", screen = s })
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
     left_layout:add(mylauncher)
     left_layout:add(mytaglist[s])
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
-    if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(batterymonitor)
+    right_layout:add(cpumonitor)
+    right_layout:add(clockmonitor)
     right_layout:add(mylayoutbox[s])
     -- Now bring it all together (with the tasklist in the middle)
     local layout = wibox.layout.align.horizontal()
     layout:set_left(left_layout)
-    layout:set_middle(mytasklist[s])
     layout:set_right(right_layout)
 
     mywibox[s]:set_widget(layout)
-
-    -- Create the bottom wibox
-    mywibox[s] = awful.wibox({ position = "bottom", screen = s })
-    -- Widgets that are aligned to the right
-    local bottom_right_layout = wibox.layout.fixed.horizontal()
-    bottom_right_layout:add(mailmonitor)
-    bottom_right_layout:add(batterymonitor)
-    bottom_right_layout:add(cpumonitor)
-    bottom_right_layout:add(clockmonitor)
-    -- Now bring it all together (with the tasklist in the middle)
-    local bottom_layout = wibox.layout.align.horizontal()
-    bottom_layout:set_right(bottom_right_layout)
-
-    mywibox[s]:set_widget(bottom_layout)
 end
 -- }}}
 
@@ -386,21 +344,6 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- }}}
 
 -- {{{ Widgets hooks
--- Mail monitor hook.
-require("mbox")
-local main_mbox = os.getenv("HOME") .. "/.mail/main"
-local golang_mbox = os.getenv("HOME") .. "/.mail/golang-nuts"
-update_mail_proc = function ()
-   local main_total, main_unread, main_new = calcmail(main_mbox)
-   local golang_total, golang_unread, golang_new = calcmail(golang_mbox)
-   
-   mailmonitor:set_text(" [Mail: " .. main_unread .. ":" .. golang_unread .. "]")
-end
-update_mail_proc()
-mytimer = timer { timeout = 5 }
-mytimer:connect_signal("timeout", update_mail_proc)
-mytimer:start()
-
 -- Battery usage monitor hook.
 require("linuxbatt")
 update_battery_proc = function ()
@@ -413,10 +356,11 @@ mytimer:connect_signal("timeout", update_battery_proc)
 mytimer:start()
 
 -- CPU temprature monitor hook.
-require("cputemp")
+-- require("cputemp")
 require("cpufreq")
 update_cpu_proc = function ()
-   cpumonitor:set_text(" [CPU: " .. get_cpufreq() .. "MHz " .. get_cputemp() .. "] ")
+   -- cpumonitor:set_text(" [CPU: " .. get_cpufreq() .. "MHz " .. get_cputemp() .. "] ")
+   cpumonitor:set_text(" [CPU: " .. get_cpufreq() .. "MHz] ")
 end
 update_cpu_proc()
 mytimer = timer { timeout = 10 }

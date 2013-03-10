@@ -19,7 +19,7 @@
 -- Battery 0: Full, 100%
 
 local settings={
-   status_file = "/sys/class/power_supply/C1E9/uevent"
+   status_file = "/sys/class/power_supply/BAT1/uevent"
 }
 
 -- Returns: charged percent, chargin status.
@@ -50,12 +50,12 @@ function get_linuxbatt()
 			if i ~= nil then
 			   status = charging_statuses[param]
 			end
-		 elseif param == "CHARGE_FULL" then
+		 elseif param == "ENERGY_FULL" then
 			i, j, param = string.find(line, "=(%d+)", j)
 			if i ~= nil then
 			   charge_full = param
 			end
-		 elseif param == "CHARGE_NOW" then
+		 elseif param == "ENERGY_NOW" then
 			i, j, param = string.find(line, "=(%d+)", j)
 			if i ~= nil then
 			   charge_now = param

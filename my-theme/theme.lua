@@ -3,7 +3,7 @@ local default_theme_path = "/usr/share/awesome/themes/default/"
 
 theme = {}
 
-theme.font          = "terminus 10"
+theme.font          = "terminus 14"
 
 theme.bg_normal     = "#2d2d2d"
 theme.bg_focus      = "#3a3a3a"
@@ -37,8 +37,8 @@ theme.taglist_squares_unsel = theme_path .. "taglist_squares.png"
 -- menu_[bg|fg]_[normal|focus]
 -- menu_[border_color|border_width]
 theme.menu_submenu_icon = default_theme_path .. "submenu.png"
-theme.menu_height       = 20
-theme.menu_width        = 100
+theme.menu_height       = 25
+theme.menu_width        = 200
 
 -- You can add as many variables as
 -- you wish and access them by using
