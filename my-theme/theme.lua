@@ -1,3 +1,6 @@
+local theme_path = os.getenv("HOME") .. "/.config/awesome/my-theme/"
+local default_theme_path = "/usr/share/awesome/themes/default/"
+
 theme = {}
 
 theme.font          = "terminus 10"
@@ -27,15 +30,15 @@ theme.border_marked = "#91231c"
 --taglist_bg_focus = #ff0000
 
 -- Display the taglist squares
-theme.taglist_squares_sel = "/usr/share/awesome/themes/default/taglist/squarefw.png"
-theme.taglist_squares_unsel = "/usr/share/awesome/themes/default/taglist/squarew.png"
+theme.taglist_squares_sel   = theme_path .. "taglist_squares.png"
+theme.taglist_squares_unsel = theme_path .. "taglist_squares.png"
 
 -- Variables set for theming menu
 -- menu_[bg|fg]_[normal|focus]
 -- menu_[border_color|border_width]
-theme.menu_submenu_icon = "/usr/share/awesome/themes/default/submenu.png"
-theme.menu_height   = 20
-theme.menu_width    = 100
+theme.menu_submenu_icon = default_theme_path .. "submenu.png"
+theme.menu_height       = 20
+theme.menu_width        = 100
 
 -- You can add as many variables as
 -- you wish and access them by using
@@ -43,48 +46,47 @@ theme.menu_width    = 100
 --bg_widget    = #cc0000
 
 -- Define the image to load
-theme.titlebar_close_button_normal = "/usr/share/awesome/themes/default/titlebar/close_normal.png"
-theme.titlebar_close_button_focus  = "/usr/share/awesome/themes/default/titlebar/close_focus.png"
+theme.titlebar_close_button_normal              = default_theme_path .. "titlebar/close_normal.png"
+theme.titlebar_close_button_focus               = default_theme_path .. "titlebar/close_focus.png"
 
-theme.titlebar_ontop_button_normal_inactive = "/usr/share/awesome/themes/default/titlebar/ontop_normal_inactive.png"
-theme.titlebar_ontop_button_focus_inactive  = "/usr/share/awesome/themes/default/titlebar/ontop_focus_inactive.png"
-theme.titlebar_ontop_button_normal_active = "/usr/share/awesome/themes/default/titlebar/ontop_normal_active.png"
-theme.titlebar_ontop_button_focus_active  = "/usr/share/awesome/themes/default/titlebar/ontop_focus_active.png"
+theme.titlebar_ontop_button_normal_inactive     = default_theme_path .. "titlebar/ontop_normal_inactive.png"
+theme.titlebar_ontop_button_focus_inactive      = default_theme_path .. "titlebar/ontop_focus_inactive.png"
+theme.titlebar_ontop_button_normal_active       = default_theme_path .. "titlebar/ontop_normal_active.png"
+theme.titlebar_ontop_button_focus_active        = default_theme_path .. "titlebar/ontop_focus_active.png"
 
-theme.titlebar_sticky_button_normal_inactive = "/usr/share/awesome/themes/default/titlebar/sticky_normal_inactive.png"
-theme.titlebar_sticky_button_focus_inactive  = "/usr/share/awesome/themes/default/titlebar/sticky_focus_inactive.png"
-theme.titlebar_sticky_button_normal_active = "/usr/share/awesome/themes/default/titlebar/sticky_normal_active.png"
-theme.titlebar_sticky_button_focus_active  = "/usr/share/awesome/themes/default/titlebar/sticky_focus_active.png"
+theme.titlebar_sticky_button_normal_inactive    = default_theme_path .. "titlebar/sticky_normal_inactive.png"
+theme.titlebar_sticky_button_focus_inactive     = default_theme_path .. "titlebar/sticky_focus_inactive.png"
+theme.titlebar_sticky_button_normal_active      = default_theme_path .. "titlebar/sticky_normal_active.png"
+theme.titlebar_sticky_button_focus_active       = default_theme_path .. "titlebar/sticky_focus_active.png"
 
-theme.titlebar_floating_button_normal_inactive = "/usr/share/awesome/themes/default/titlebar/floating_normal_inactive.png"
-theme.titlebar_floating_button_focus_inactive  = "/usr/share/awesome/themes/default/titlebar/floating_focus_inactive.png"
-theme.titlebar_floating_button_normal_active = "/usr/share/awesome/themes/default/titlebar/floating_normal_active.png"
-theme.titlebar_floating_button_focus_active  = "/usr/share/awesome/themes/default/titlebar/floating_focus_active.png"
+theme.titlebar_floating_button_normal_inactive  = default_theme_path .. "titlebar/floating_normal_inactive.png"
+theme.titlebar_floating_button_focus_inactive   = default_theme_path .. "titlebar/floating_focus_inactive.png"
+theme.titlebar_floating_button_normal_active    = default_theme_path .. "titlebar/floating_normal_active.png"
+theme.titlebar_floating_button_focus_active     = default_theme_path .. "titlebar/floating_focus_active.png"
 
-theme.titlebar_maximized_button_normal_inactive = "/usr/share/awesome/themes/default/titlebar/maximized_normal_inactive.png"
-theme.titlebar_maximized_button_focus_inactive  = "/usr/share/awesome/themes/default/titlebar/maximized_focus_inactive.png"
-theme.titlebar_maximized_button_normal_active = "/usr/share/awesome/themes/default/titlebar/maximized_normal_active.png"
-theme.titlebar_maximized_button_focus_active  = "/usr/share/awesome/themes/default/titlebar/maximized_focus_active.png"
+theme.titlebar_maximized_button_normal_inactive = default_theme_path .. "titlebar/maximized_normal_inactive.png"
+theme.titlebar_maximized_button_focus_inactive  = default_theme_path .. "titlebar/maximized_focus_inactive.png"
+theme.titlebar_maximized_button_normal_active   = default_theme_path .. "titlebar/maximized_normal_active.png"
+theme.titlebar_maximized_button_focus_active    = default_theme_path .. "titlebar/maximized_focus_active.png"
 
-theme.wallpaper = "/home/viacheslav/.config/awesome/my-theme/tux_keyboard.jpg"
+theme.wallpaper = theme_path .. "tux_keyboard.jpg"
 
 -- You can use your own layout icons like this:
-theme.layout_fairh = "/usr/share/awesome/themes/default/layouts/fairhw.png"
-theme.layout_fairv = "/usr/share/awesome/themes/default/layouts/fairvw.png"
-theme.layout_floating  = "/usr/share/awesome/themes/default/layouts/floatingw.png"
-theme.layout_magnifier = "/usr/share/awesome/themes/default/layouts/magnifierw.png"
-theme.layout_max = "/usr/share/awesome/themes/default/layouts/maxw.png"
-theme.layout_fullscreen = "/usr/share/awesome/themes/default/layouts/fullscreenw.png"
-theme.layout_tilebottom = "/usr/share/awesome/themes/default/layouts/tilebottomw.png"
-theme.layout_tileleft   = "/usr/share/awesome/themes/default/layouts/tileleftw.png"
-theme.layout_tile = "/usr/share/awesome/themes/default/layouts/tilew.png"
-theme.layout_tiletop = "/usr/share/awesome/themes/default/layouts/tiletopw.png"
-theme.layout_spiral  = "/usr/share/awesome/themes/default/layouts/spiralw.png"
-theme.layout_dwindle = "/usr/share/awesome/themes/default/layouts/dwindlew.png"
+theme.layout_fairh      = default_theme_path .. "layouts/fairhw.png"
+theme.layout_fairv      = default_theme_path .. "layouts/fairvw.png"
+theme.layout_floating   = default_theme_path .. "layouts/floatingw.png"
+theme.layout_magnifier  = default_theme_path .. "layouts/magnifierw.png"
+theme.layout_max        = default_theme_path .. "layouts/maxw.png"
+theme.layout_fullscreen = default_theme_path .. "layouts/fullscreenw.png"
+theme.layout_tilebottom = default_theme_path .. "layouts/tilebottomw.png"
+theme.layout_tileleft   = default_theme_path .. "layouts/tileleftw.png"
+theme.layout_tile       = default_theme_path .. "layouts/tilew.png"
+theme.layout_tiletop    = default_theme_path .. "layouts/tiletopw.png"
+theme.layout_spiral     = default_theme_path .. "layouts/spiralw.png"
+theme.layout_dwindle    = default_theme_path .. "layouts/dwindlew.png"
 
-theme.awesome_icon = "/home/viacheslav/.config/awesome/my-theme/menu-arch-button.png"
+theme.awesome_icon = "/usr/share/awesome/icons/awesome32.png"
 
 -- theme.icon_theme = nil
 
 return theme
-
