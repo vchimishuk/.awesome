@@ -1,11 +1,14 @@
 -- Standard awesome library
-require("awful")
-require("awful.autofocus")
-require("awful.rules")
+local gears = require("gears")
+local awful = require("awful")
+awful.rules = require("awful.rules")
+autofocus = require("awful.autofocus")
+-- Widget and layout library
+local wibox = require("wibox")
 -- Theme handling library
-require("beautiful")
+local beautiful = require("beautiful")
 -- Notification library
-require("naughty")
+local naughty = require("naughty")
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
@@ -55,17 +58,24 @@ default_layouts =
 use_titlebar = false
 -- }}}
 
+-- {{{ Wallpaper
+if beautiful.wallpaper then
+    for s = 1, screen.count() do
+        gears.wallpaper.maximized(beautiful.wallpaper, s, true)
+    end
+end
+-- }}}
+
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ "web", "emacs", "term", "misc", "im", "music" }, s)
+    tags[s] = awful.tag({ " web ", " emacs ", " term ", " misc ", " im ", " music " }, s)
 
     -- Set default layout for tags.
     for tagnumber = 1, 6 do
        awful.layout.set(default_layouts[tagnumber], tags[s][tagnumber])
-       --awful.layout.set(layouts[tagnumber], tags[s][tagnumber])
     end
 end
 -- }}}
@@ -84,14 +94,11 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                   }
                         })
 
-mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
+mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
 -- }}}
 
 -- {{{ Wibox
--- Create a systray
-mysystray = widget({ type = "systray" })
-
 -- Create a wibox for each screen and add it
 mywibox = {}
 mywibox_bottom = {}
@@ -133,11 +140,10 @@ mytasklist.buttons = awful.util.table.join(
                                           end))
 
 -- Create bottom wibox's widgets.
-clockmonitor = widget({ type = "textbox" })
-mailmonitor = widget({ type = "textbox" })
-batterymonitor = widget({ type = "textbox" })
-cputempmonitor = widget({ type = "textbox" })
-rssmonitor = widget({ type = "textbox" })
+clockmonitor = awful.widget.textclock("[%d.%m.%Y %H:%M]")
+mailmonitor = wibox.widget.textbox()
+batterymonitor = wibox.widget.textbox()
+cpumonitor = wibox.widget.textbox()
 
 for s = 1, screen.count() do
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
@@ -149,38 +155,42 @@ for s = 1, screen.count() do
                            awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
     -- Create a taglist widget
-    mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons)
+    mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
     -- Create a tasklist widget
-    mytasklist[s] = awful.widget.tasklist(function(c)
-                                              return awful.widget.tasklist.label.currenttags(c, s)
-                                          end, mytasklist.buttons)
+    mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
-    -- Create the wibox
+    -- Create the top wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s })
-    -- Add widgets to the wibox - order matters
-    mywibox[s].widgets = {
-        {
-            mylauncher,
-            mytaglist[s],
-            layout = awful.widget.layout.horizontal.leftright
-        },
-        mylayoutbox[s],
-        s == 1 and mysystray or nil,
-        mytasklist[s],
-        layout = awful.widget.layout.horizontal.rightleft
-    }
+    -- Widgets that are aligned to the left
+    local left_layout = wibox.layout.fixed.horizontal()
+    left_layout:add(mylauncher)
+    left_layout:add(mytaglist[s])
+    -- Widgets that are aligned to the right
+    local right_layout = wibox.layout.fixed.horizontal()
+    if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(mylayoutbox[s])
+    -- Now bring it all together (with the tasklist in the middle)
+    local layout = wibox.layout.align.horizontal()
+    layout:set_left(left_layout)
+    layout:set_middle(mytasklist[s])
+    layout:set_right(right_layout)
 
-    -- Create bottom wibox.
-    mywibox_bottom[s] = awful.wibox({ position = "bottom", screen = s })
-    mywibox_bottom[s].widgets = {
-       clockmonitor,
-       cputempmonitor,
-       batterymonitor,
-       rssmonitor,
-       mailmonitor,
-       layout = awful.widget.layout.horizontal.rightleft
-    }    
+    mywibox[s]:set_widget(layout)
+
+    -- Create the bottom wibox
+    mywibox[s] = awful.wibox({ position = "bottom", screen = s })
+    -- Widgets that are aligned to the right
+    local bottom_right_layout = wibox.layout.fixed.horizontal()
+    bottom_right_layout:add(mailmonitor)
+    bottom_right_layout:add(batterymonitor)
+    bottom_right_layout:add(cpumonitor)
+    bottom_right_layout:add(clockmonitor)
+    -- Now bring it all together (with the tasklist in the middle)
+    local bottom_layout = wibox.layout.align.horizontal()
+    bottom_layout:set_right(bottom_right_layout)
+
+    mywibox[s]:set_widget(bottom_layout)
 end
 -- }}}
 
@@ -318,6 +328,7 @@ awful.rules.rules = {
       properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,
                      focus = true,
+                     size_hints_honor = false,
                      keys = clientkeys,
                      buttons = clientbuttons } },
     { rule = { class = "MPlayer" },
@@ -345,12 +356,12 @@ awful.rules.rules = {
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
-client.add_signal("manage", function (c, startup)
+client.connect_signal("manage", function (c, startup)
     -- Add a titlebar
     -- awful.titlebar.add(c, { modkey = modkey })
 
     -- Enable sloppy focus
-    c:add_signal("mouse::enter", function(c)
+    c:connect_signal("mouse::enter", function(c)
         if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
             and awful.client.focus.filter(c) then
             client.focus = c
@@ -368,67 +379,48 @@ client.add_signal("manage", function (c, startup)
             awful.placement.no_offscreen(c)
         end
     end
-    c.size_hints_honor = false
 end)
 
-client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
 
 -- {{{ Widgets hooks
--- Clock monitor hook.
-update_clock_proc = function ()
-		       clockmonitor.text = os.date(" [%d.%m.%Y %H:%M]")
-		    end
-update_clock_proc()
-mytimer = timer { timeout = 50 }
-mytimer:add_signal("timeout", update_clock_proc)
-mytimer:start()
-
 -- Mail monitor hook.
 require("mbox")
+local main_mbox = os.getenv("HOME") .. "/.mail/main"
+local golang_mbox = os.getenv("HOME") .. "/.mail/golang-nuts"
 update_mail_proc = function ()
-		      local main_total, main_unread, main_new = calcmail(os.getenv("HOME") .. "/.mail/main")
-		      local golang_total, golang_unread, golang_new = calcmail(os.getenv("HOME") .. "/.mail/golang-nuts")
-
-		      mailmonitor.text = " [Mail: " .. main_unread .. ":" .. golang_unread .. "]"
-		   end
+   local main_total, main_unread, main_new = calcmail(main_mbox)
+   local golang_total, golang_unread, golang_new = calcmail(golang_mbox)
+   
+   mailmonitor:set_text(" [Mail: " .. main_unread .. ":" .. golang_unread .. "]")
+end
 update_mail_proc()
 mytimer = timer { timeout = 5 }
-mytimer:add_signal("timeout", update_mail_proc)
+mytimer:connect_signal("timeout", update_mail_proc)
 mytimer:start()
-
--- RSS monitor hook.
---require("rss")
---update_rss_proc = function ()
---		     rssmonitor.text = " [RSS: " .. rss_get_unread_count() .. "]"
---		  end
---update_rss_proc()
---mytimer = timer { timeout = 5 }
---mytimer:add_signal("timeout", update_rss_proc)
---mytimer:start()
 
 -- Battery usage monitor hook.
 require("linuxbatt")
 update_battery_proc = function ()
-			 local state, perc = get_linuxbatt()
-
-			 batterymonitor.text = " [Battery: " .. state .. perc .. "%]"
-		      end
+   local state, perc = get_linuxbatt()
+   batterymonitor:set_text(" [Battery: " .. state .. perc .. "%]")
+end
 update_battery_proc()
 mytimer = timer { timeout = 30 }
-mytimer:add_signal("timeout", update_battery_proc)
+mytimer:connect_signal("timeout", update_battery_proc)
 mytimer:start()
 
 -- CPU temprature monitor hook.
 require("cputemp")
 require("cpufreq")
-update_cputemp_proc = function ()
-			 cputempmonitor.text = " [CPU: " .. get_cpufreq() .. "MHz " .. get_cputemp() .. "]"
-		      end
-update_cputemp_proc()
+update_cpu_proc = function ()
+   cpumonitor:set_text(" [CPU: " .. get_cpufreq() .. "MHz " .. get_cputemp() .. "] ")
+end
+update_cpu_proc()
 mytimer = timer { timeout = 10 }
-mytimer:add_signal("timeout", update_cputemp_proc)
+mytimer:connect_signal("timeout", update_cpu_proc)
 mytimer:start()
 -- }}}
 
