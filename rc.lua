@@ -194,7 +194,7 @@ globalkeys = awful.util.table.join(
     -- Standard program
     awful.key({ modkey,           }, "F2", function () awful.util.spawn(terminal) end),
     awful.key({ modkey,           }, "F3", function () awful.util.spawn("gmrun") end),
-    awful.key({ modkey,           }, "F4", function () awful.util.spawn("/home/viacheslav/bin/emacs") end),
+    awful.key({ modkey,           }, "F4", function () awful.util.spawn(os.getenv("HOME") .. "/bin/emacs") end),
 
     awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end),
     awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end),
@@ -210,8 +210,11 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "KP_Divide",   function () awful.util.spawn("mpc -h server -p 6600 volume -2") end),
     awful.key({ modkey,           }, "KP_Multiply", function () awful.util.spawn("mpc -h server -p 6600 volume +2") end),
 
+    -- Touchpad management.
+    awful.key({ modkey,           }, "\\", function () awful.util.spawn(os.getenv("HOME") .. "/bin/toggletouchpad") end),
+
     -- Other custom hotkeys
-    awful.key({modkey,            }, "F11", function () awful.util.spawn("/home/viacheslav/bin/monitor off") end)
+    awful.key({modkey,            }, "F11", function () awful.util.spawn(os.getenv("HOME") .. "/bin/monitor off") end)
 )
 
 clientkeys = awful.util.table.join(
