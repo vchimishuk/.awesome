@@ -3,7 +3,7 @@ local default_theme_path = "/usr/share/awesome/themes/default/"
 
 theme = {}
 
-theme.font          = "terminus 14"
+theme.font          = "Ubuntu Mono 14"
 
 theme.bg_normal     = "#2d2d2d"
 theme.bg_focus      = "#3a3a3a"
